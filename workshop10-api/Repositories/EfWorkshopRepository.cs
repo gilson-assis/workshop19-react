@@ -20,11 +20,17 @@ public class EfWorkshopRepository : IWorkshopRepository
         {
             query = query.Where(w => w.EndAt >= to.Value);
         }
+
+ 
         if (!string.IsNullOrWhiteSpace(q))
         {
-            var termo = q.ToLowerInvariant();
-            query = query.Where(w => w.Title.Contains(termo)|| w.Description.Contains(termo));
+            var termo = q.Trim();
+            query = query.Where(w =>
+                (w.Title != null && w.Title.Contains(termo)) ||
+                (w.Description != null && w.Description.Contains(termo))
+            );
         }
+
         Console.WriteLine(query.ToQueryString());
         return await query.ToListAsync(ct);
         
