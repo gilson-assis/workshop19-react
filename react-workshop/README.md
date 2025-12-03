@@ -71,3 +71,10 @@ export default defineConfig([
   },
 ])
 ```
+<!-- #API do Arthur
+#VITE_API_BASE="http://workshop.verum.tech/api"
+#VITE_API_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBjYW1wdXMiLCJqdGkiOiJmYjFhYWIzZC01MmJmLTQyOWItYTk2My0zYzJmN2FkNGEzODIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiQWRtaW4iLCJJbnN0cnVjdG9yIl0sImV4cCI6MTc2NDcwNzc5MCwiaXNzIjoiQ2FtcHVzV29ya3Nob3BzIiwiYXVkIjoiQ2FtcHVzV29ya3Nob3BzLkFwaSJ9.WKXpS5svG_iiwBg8aaHIdtVefuqS4rlYwDpxO_gOwLE" -->
+
+
+
+

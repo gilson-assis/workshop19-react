@@ -14,7 +14,8 @@ export type WorkshopList = Workshop[]
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:5000'
 const TOKEN = import.meta.env.VITE_API_TOKEN ?? ''
-const WORKSHOPS_PATH = '/workshops'
+const WORKSHOPS_PATH = '/Workshops' 
+
 
 const getHeaders = () => {
     return {

@@ -14,7 +14,10 @@ using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // JWT
+#region JWT
+
 var jwt = builder.Configuration.GetSection("Jwt");
 var keyBytes = Encoding.UTF8.GetBytes(jwt["Key"]!);
 
@@ -42,6 +45,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CanDeleteWorkshops", p => p.RequireRole("Admin"));
     options.AddPolicy("CanViewAnalytics",  p => p.RequireRole("Admin"));
 });
+
+#endregion
 
 // Add services
 builder.Services.AddDbContext<WorkshopsDbContext>(options =>
@@ -77,11 +82,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o =>
 {
-    o.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    o.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "CampusWorkshops API",
         Version = "v1",
-        Description = "API para gestão de workshops do campus (MVP in-memory)."
+        Description = "API para gestão de workshops do campus."
     });
     var bearerScheme = new OpenApiSecurityScheme
     {
@@ -118,6 +123,43 @@ builder.Services.AddSwaggerGen(o =>
 
 // DI
 
+
+#region CORS: Adiciona o Serviço com a Política Nomeada
+
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+// 1. Adicionar o serviço CORS e definir a política
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          // Use WithOrigins para especificar as URLs permitidas.
+                          // Inclua o esquema (http ou https) e a porta, se houver.
+                          policy.WithOrigins("http://localhost:5173") //Meus clientes confiáveis entram aqui.
+                                .AllowAnyHeader() // Permite qualquer cabeçalho na requisição
+                                .AllowAnyMethod(); // Permite todos os métodos HTTP (GET, POST, etc.)
+                          
+                          // Se estiver usando cookies ou autenticação baseada em credenciais, 
+                          // substitua AllowAnyOrigin por WithOrigins e adicione:
+                          // .AllowCredentials(); 
+                          // *Nota: Não é permitido usar .AllowAnyOrigin() junto com .AllowCredentials().
+
+                          //Breve explicação:
+                          
+                          // _myAllowSpecificOrigins: É o nome da sua política. Use um nome descritivo.
+
+                          // WithOrigins(...): Este método é crucial. Você lista as URLs exatas (origens) que terão permissão para acessar sua API. 
+                          // Evite usar AllowAnyOrigin() (que permite todas as origens) para manter a segurança.
+
+                          // AllowAnyHeader() e AllowAnyMethod(): Permitem que os clientes usem qualquer cabeçalho e método HTTP. 
+                          // Você pode restringi-los ainda mais usando WithHeaders(...) e WithMethods(...) se necessário.  
+
+                      });
+});
+
+#endregion
+
 var app = builder.Build();
 
 // Exception handler that returns RFC7807 ProblemDetails for unhandled errors
@@ -144,6 +186,25 @@ app.UseExceptionHandler(errApp =>
 app.UseHttpsRedirection();
 
 app.UseAuthentication();   // <-- antes
+
+#region CORS: Usar o Middleware aqui
+// 2. Usar o Middleware CORS com o nome da política
+app.UseCors(MyAllowSpecificOrigins);
+
+/* app.UseCors(MyAllowSpecificOrigins): Aplica a política CORS que você definiu na etapa 1.
+
+💡 Dicas Adicionais
+
+    Ambientes de Desenvolvimento/Produção: É comum definir políticas separadas para o ambiente de Desenvolvimento (ex: http://localhost:4200) e 
+    Produção, usando a configuração do ASP.NET Core (IConfiguration) para ler as origens permitidas.
+
+    Ordem do Middleware: app.UseCors() deve ser chamado antes de app.UseAuthorization() e app.MapControllers() (ou app.UseMvc()). 
+    A ordem é importante no pipeline de processamento de requisições do ASP.NET Core.
+
+*/
+
+#endregion
+
 app.UseAuthorization();    // <-- depois
 
 app.UseSwagger();
