@@ -124,7 +124,6 @@ public class WorkshopsController : ControllerBase
     /// <summary>Atualiza parcialmente um workshop existente.</summary>
     [HttpPatch("{id:guid}")]
     [Authorize(Policy = "CanWriteWorkshops")]
-
     public async Task<IActionResult> Patch(Guid id, [FromBody] PatchWorkshopRequest body, CancellationToken ct)
     {
         if (!ModelState.IsValid)
@@ -206,7 +205,6 @@ public class WorkshopsController : ControllerBase
     /// <summary>Remove um workshop.</summary>
     [HttpDelete("{id:guid}")]
     [Authorize(Policy = "CanDeleteWorkshops")]
-
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
         var workshop = await _repo.GetByIdAsync(id, ct);
